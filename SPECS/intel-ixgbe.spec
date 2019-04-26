@@ -8,10 +8,15 @@
 
 Summary: %{vendor_name} %{driver_name} device drivers
 Name: %{vendor_label}-%{driver_name}
-Version: 4.4.6
-Release: 1%{?dist}
+Version: 5.5.2
+Release: 2%{?dist}
 License: GPL
-Source: https://code.citrite.net/rest/archive/latest/projects/XS/repos/driver-%{name}/archive?at=%{version}&format=tgz&prefix=driver-%{name}-%{version}#/%{name}-%{version}.tar.gz
+
+Source0: https://code.citrite.net/rest/archive/latest/projects/XS/repos/driver-intel-ixgbe/archive?at=5.5.2-2&format=tgz&prefix=driver-intel-ixgbe-5.5.2#/intel-ixgbe-5.5.2.tar.gz
+
+
+Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/driver-intel-ixgbe/archive?at=5.5.2-2&format=tgz&prefix=driver-intel-ixgbe-5.5.2#/intel-ixgbe-5.5.2.tar.gz) = 458ea819a145f82c2a38fcc7e9b570a065472fa1
+
 
 BuildRequires: gcc
 BuildRequires: kernel-devel
@@ -51,3 +56,8 @@ find %{buildroot}/lib/modules/%{kernel_version} -name "*.ko" -type f | xargs chm
 /lib/modules/%{kernel_version}/*/*.ko
 
 %changelog
+* Wed Dec 05 2018 Ross Lagerwall <ross.lagerwall@citrix.com> - 5.5.2-2
+- CA-302474: Fix race when VF driver does a reset
+
+* Fri Nov 23 2018 Deli Zhang <deli.zhang@citrix.com> - 5.5.2-1
+- CP-29858: Upgrade ixgbe driver to version 5.5.2
