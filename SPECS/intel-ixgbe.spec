@@ -6,16 +6,23 @@
 %define module_dir updates
 %endif
 
+## kernel_version will be set during build because then kernel-devel
+## package installs an RPM macro which sets it. This check keeps
+## rpmlint happy.
+%if %undefined kernel_version
+%define kernel_version dummy
+%endif
+
 Summary: %{vendor_name} %{driver_name} device drivers
 Name: %{vendor_label}-%{driver_name}
-Version: 5.5.2
-Release: 2%{?dist}
+Version: 5.9.4
+Release: 1%{?dist}
 License: GPL
 
-Source0: https://code.citrite.net/rest/archive/latest/projects/XS/repos/driver-intel-ixgbe/archive?at=5.5.2-2&format=tgz&prefix=driver-intel-ixgbe-5.5.2#/intel-ixgbe-5.5.2.tar.gz
+Source0: https://code.citrite.net/rest/archive/latest/projects/XS/repos/driver-intel-ixgbe/archive?at=5.9.4&format=tgz&prefix=driver-intel-ixgbe-5.9.4#/intel-ixgbe-5.9.4.tar.gz
 
 
-Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/driver-intel-ixgbe/archive?at=5.5.2-2&format=tgz&prefix=driver-intel-ixgbe-5.5.2#/intel-ixgbe-5.5.2.tar.gz) = 458ea819a145f82c2a38fcc7e9b570a065472fa1
+Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/driver-intel-ixgbe/archive?at=5.9.4&format=tgz&prefix=driver-intel-ixgbe-5.9.4#/intel-ixgbe-5.9.4.tar.gz) = e0d7b41738f9ff695fce249967b56555ad292f0e
 
 
 BuildRequires: kernel-devel
@@ -55,6 +62,9 @@ find %{buildroot}/lib/modules/%{kernel_version} -name "*.ko" -type f | xargs chm
 /lib/modules/%{kernel_version}/*/*.ko
 
 %changelog
+* Mon May 17 2021 Chuntian Xu <chuntian.xu@citrix.com> - 5.9.4-1
+- CP-36664: Upgrade ixgbe driver to version 5.9.4
+
 * Wed Dec 05 2018 Ross Lagerwall <ross.lagerwall@citrix.com> - 5.5.2-2
 - CA-302474: Fix race when VF driver does a reset
 
