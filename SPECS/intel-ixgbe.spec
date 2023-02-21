@@ -1,8 +1,8 @@
-%global package_speccommit 0ddfdf6305632dfc248bb734dd0fc865bd1ee90a
-%global usver 5.9.4
-%global xsver 2
+%global package_speccommit 0074de48c3f55d5541447cb7ed3f50f399e1785f
+%global usver 5.18.6
+%global xsver 1
 %global xsrel %{xsver}%{?xscount}%{?xshash}
-%global package_srccommit 5.9.4
+%global package_srccommit 5.18.6
 %define vendor_name Intel
 %define vendor_label intel
 %define driver_name ixgbe
@@ -20,10 +20,10 @@
 
 Summary: %{vendor_name} %{driver_name} device drivers
 Name: %{vendor_label}-%{driver_name}
-Version: 5.9.4
+Version: 5.18.6
 Release: %{?xsrel}%{?dist}
 License: GPL
-Source0: intel-ixgbe-5.9.4.tar.gz
+Source0: intel-ixgbe-5.18.6.tar.gz
 
 BuildRequires: kernel-devel
 %{?_cov_buildrequires}
@@ -68,6 +68,9 @@ find %{buildroot}/lib/modules/%{kernel_version} -name "*.ko" -type f | xargs chm
 %{?_cov_results_package}
 
 %changelog
+* Mon Jan 09 2023 Zhuangxuan Fei <zhuangxuan.fei@cloud.com> - 5.18.6-1
+- CP-41539: Upgrade ixgbe driver to version 5.18.6
+
 * Mon Feb 14 2022 Ross Lagerwall <ross.lagerwall@citrix.com> - 5.9.4-2
 - CP-38416: Enable static analysis
 
