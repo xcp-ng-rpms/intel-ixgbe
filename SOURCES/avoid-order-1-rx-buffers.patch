@@ -1,0 +1,23 @@
+Avoid allocating order 1 RX buffers
+
+Certain hardware includes an additional 8 byte timestamp in the frame whose
+length is added to max_frame. This exceeds the ethernet size check (1514 + 4)
+and causes the code to instead allocate larger order 1 RX buffers which causes
+excessive swiotlb usage in certain circumstances.
+
+The IXGBE_2K_TOO_SMALL_WITH_PADDING macro checks that we can fit a 1536 byte
+frame in a 2 KiB buffer so all we need to check here is that the max_frame size
+can fit in 1536 bytes.
+
+Signed-off-by: Ross Lagerwall <ross.lagerwall@citrix.com>
+--- intel-ixgbe-6.1.5-orig/src/ixgbe_main.c	2025-09-11 16:21:42.676097266 +0100
++++ intel-ixgbe-6.1.5/src/ixgbe_main.c	2025-09-11 16:23:52.517410163 +0100
+@@ -5574,7 +5574,7 @@
+ 			set_bit(__IXGBE_RX_3K_BUFFER, &rx_ring->state);
+ 
+ 		if (IXGBE_2K_TOO_SMALL_WITH_PADDING ||
+-		    (max_frame > (ETH_FRAME_LEN + ETH_FCS_LEN)))
++		    (max_frame > IXGBE_RXBUFFER_1536))
+ 			set_bit(__IXGBE_RX_3K_BUFFER, &rx_ring->state);
+ #endif
+ #else /* !HAVE_SWIOTLB_SKIP_CPU_SYNC */
