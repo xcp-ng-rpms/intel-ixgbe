@@ -1,0 +1,34 @@
+From 22d11eacc32cab558e2620b6aad55d07e661847c Mon Sep 17 00:00:00 2001
+From: Wenwen Wang <wenwen@cs.uga.edu>
+Date: Sun, 11 Aug 2019 15:07:47 -0500
+Subject: [PATCH] ixgbe: fix memory leaks
+
+In ixgbe_configure_clsu32(), 'jump', 'input', and 'mask' are allocated
+through kzalloc() respectively in a for loop body. Then,
+ixgbe_clsu32_build_input() is invoked to build the input. If this process
+fails, next iteration of the for loop will be executed. However, the
+allocated 'jump', 'input', and 'mask' are not deallocated on this execution
+path, leading to memory leaks.
+
+Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+---
+ src/ixgbe_main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+Index: ethernet-linux-ixgbe/src/ixgbe_main.c
+===================================================================
+--- ethernet-linux-ixgbe.orig/src/ixgbe_main.c
++++ ethernet-linux-ixgbe/src/ixgbe_main.c
+@@ -12608,6 +12608,10 @@ static int ixgbe_configure_clsu32(struct
+ 				jump->mat = nexthdr[i].jump;
+ 				adapter->jump_tables[link_uhtid] = jump;
+ 				break;
++			} else {
++				kfree(mask);
++				kfree(input);
++				kfree(jump);
+ 			}
+ 		}
+ 

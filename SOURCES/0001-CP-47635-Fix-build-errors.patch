@@ -1,0 +1,35 @@
+From 474c9d655e14031f080ceca6b5485d287a7784aa Mon Sep 17 00:00:00 2001
+From: Stephen Cheng <stephen.cheng@cloud.com>
+Date: Mon, 30 Jun 2025 15:07:26 +0800
+Subject: [PATCH] CP-47635: Fix build errors
+
+/builddir/build/BUILD/intel-ixgbe-6.1.5/src/kcompat-lib.sh: line 47: /dev/stderr: Permission denied
+/builddir/build/BUILD/intel-ixgbe-6.1.5/src/kcompat-lib.sh: line 51: /dev/stderr: Permission denied
+
+Signed-off-by: Stephen Cheng <stephen.cheng@cloud.com>
+---
+ src/kcompat-lib.sh | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+Index: intel-ixgbe-6.2.5/src/kcompat-lib.sh
+===================================================================
+--- intel-ixgbe-6.2.5.orig/src/kcompat-lib.sh
++++ intel-ixgbe-6.2.5/src/kcompat-lib.sh
+@@ -34,7 +34,7 @@ function filter-out-bad-files() {
+ 	if [ $# = 0 ]; then
+ 		die 10 "no files passed, use '-' when reading from pipe (|)"
+ 	fi
+-	local any=0 diagmsgs=/dev/stderr re=$'[\t \n]'
++	local any=0 diagmsgs=2 re=$'[\t \n]'
+ 	[ -n "${QUIET_COMPAT-}" ] && diagmsgs=/dev/null
+ 	for x in "$@"; do
+ 		if [ -e "$x" ]; then
+@@ -406,7 +406,7 @@ function config_has() {
+ function find_config_file() {
+ 	local -a CSP
+ 	local file
+-	local diagmsgs=/dev/stderr
++	local diagmsgs=2
+ 
+ 	[ -n "${QUIET_COMPAT-}" ] && diagmsgs=/dev/null
+ 
