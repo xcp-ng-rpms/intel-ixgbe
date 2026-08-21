@@ -29,6 +29,8 @@ Patch1: 0001-ixgbe-Fix-memleak-in-ixgbe_configure_clsu32.patch
 Patch2: 0001-CP-47635-Fix-build-errors.patch
 Patch3: avoid-order-1-rx-buffers.patch
 
+Patch1000: 0001-intel-ixgbe-compat-handle-newer-kernels-with-dd_key_.patch
+
 BuildRequires: gcc
 BuildRequires: kernel-devel
 %{?_cov_buildrequires}

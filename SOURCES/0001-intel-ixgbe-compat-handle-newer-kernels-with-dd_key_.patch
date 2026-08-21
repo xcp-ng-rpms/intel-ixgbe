@@ -1,0 +1,62 @@
+From aff6a39c9477102c2f4e09ff6d5dd0a9d5a23b0a Mon Sep 17 00:00:00 2001
+From: Quentin Casasnovas <quentin.casasnovas@vates.tech>
+Date: Tue, 18 Aug 2026 11:51:14 +0200
+Subject: [PATCH] intel-ixgbe: compat: handle newer kernels with dd_key_init
+ used indirectly.
+
+There seems to be a compat layer with a HAVE_JUMP_LABEL switch that doesn't
+seem set by anything (couldn't find it inside src/kcompat_generator.sh).
+
+On a v4.19.325-cip134 kernel, not defining HAVE_JUMP_LABEL leads to the
+following build error:
+
+  /home/builder/rpmbuild/BUILD/intel-ixgbe-6.2.5/src/kcompat_gcc.h:114:36: error: expected expression before '.' token
+    /* (struct static_key_false) */ { .key = STATIC_KEY_INIT_FALSE }
+				      ^
+  ./include/linux/dynamic_debug.h:88:39: note: in definition of macro 'dd_key_init'
+   #define dd_key_init(key, init) key = (init)
+					 ^
+  ./include/linux/dynamic_debug.h:99:2: note: in expansion of macro 'DEFINE_DYNAMIC_DEBUG_METADATA_KEY'
+    DEFINE_DYNAMIC_DEBUG_METADATA_KEY(name, fmt, .key.dd_key_false, \
+    ^
+  ./include/linux/dynamic_debug.h:100:9: note: in expansion of macro 'STATIC_KEY_FALSE_INIT'
+	  (STATIC_KEY_FALSE_INIT))
+	   ^
+  ./include/linux/dynamic_debug.h:141:2: note: in expansion of macro 'DEFINE_DYNAMIC_DEBUG_METADATA'
+    DEFINE_DYNAMIC_DEBUG_METADATA(descriptor, fmt);  \
+    ^
+  ./include/linux/netdevice.h:4747:2: note: in expansion of macro 'dynamic_netdev_dbg'
+    dynamic_netdev_dbg(__dev, format, ##args);  \
+    ^
+  /home/builder/rpmbuild/BUILD/intel-ixgbe-6.2.5/src/ixgbe_osdep.h:53:2: note: in expansion of macro 'netdev_dbg'
+    netdev_dbg(ixgbe_hw_to_netdev(hw), format, ## arg)
+    ^
+  /home/builder/rpmbuild/BUILD/intel-ixgbe-6.2.5/src/ixgbe_82598.c:1140:4: note: in expansion of macro 'hw_dbg'
+      hw_dbg(hw, "EEPROM read did not pass.\n");
+      ^
+  make[1]: *** [/home/builder/rpmbuild/BUILD/intel-ixgbe-6.2.5/src/ixgbe_82598.o] Error 1
+
+Force using the HAVE_JUMP_LABEL logic to avoid the build error and use the
+code already present to handle this.
+
+Signed-off-by: Quentin Casasnovas <quentin.casasnovas@vates.tech>
+---
+ src/kcompat_gcc.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/kcompat_gcc.h b/src/kcompat_gcc.h
+index 8a3e1c61331b..1c76ba1eaf81 100644
+--- a/src/kcompat_gcc.h
++++ b/src/kcompat_gcc.h
+@@ -113,7 +113,7 @@
+ #define STATIC_KEY_FALSE_INIT \
+ 	/* (struct static_key_false) */ { .key = STATIC_KEY_INIT_FALSE }
+ 
+-#ifdef HAVE_JUMP_LABEL
++#if 1 || defined(HAVE_JUMP_LABEL)
+ /* dd_key_init() is used (indirectly) with arg like "(STATIC_KEY_INIT_FALSE)"
+  * from DEFINE_DYNAMIC_DEBUG_METADATA(), which, depending on config has many
+  * different definitions (including helper macros).
+-- 
+2.43.0
+
