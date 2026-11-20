@@ -21,7 +21,7 @@
 Summary: %{vendor_name} %{driver_name} device drivers
 Name: %{vendor_label}-%{driver_name}
 Version: 6.2.5
-Release: %{?xsrel}.kernelpreview.1%{?dist}
+Release: %{?xsrel}.kernelpreview.1.0.testv0.1%{?dist}
 License: GPL
 Source0: intel-ixgbe-6.2.5.tar.gz
 Patch0: 0001-ixgbe-fix-memory-leaks.patch
