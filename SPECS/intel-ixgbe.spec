@@ -21,7 +21,7 @@
 Summary: %{vendor_name} %{driver_name} device drivers
 Name: %{vendor_label}-%{driver_name}
 Version: 6.2.5
-Release: %{?xsrel}%{?dist}
+Release: %{?xsrel}.0.kernelpreview.1%{?dist}
 License: GPL
 Source0: intel-ixgbe-6.2.5.tar.gz
 Patch0: 0001-ixgbe-fix-memory-leaks.patch
@@ -29,8 +29,10 @@ Patch1: 0001-ixgbe-Fix-memleak-in-ixgbe_configure_clsu32.patch
 Patch2: 0001-CP-47635-Fix-build-errors.patch
 Patch3: avoid-order-1-rx-buffers.patch
 
+Patch1000: intel-ixgbe-compat-handle-newer-kernels-with-dd_key_.patch
+
 BuildRequires: gcc
-BuildRequires: kernel-devel
+BuildRequires: kernel-devel >= 4.19.325-cip137.8.0.46.16
 %{?_cov_buildrequires}
 Provides: vendor-driver
 Requires: kernel-uname-r = %{kernel_version}
@@ -80,6 +82,9 @@ find %{buildroot}/lib/modules/%{kernel_version} -name "*.ko" -type f | xargs chm
 %{?_cov_results_package}
 
 %changelog
+* Mon Nov 16 2026 Quentin Casasnovas <quentin.casasnovas@vates.tech> - 6.2.5-1.0.kernelpreview.1
+- Rebuild for kernel v4.19.325-cip137
+
 * Thu Dec 04 2025 Stephen Cheng <stephen.cheng@citrix.com> - 6.2.5-1
 - CP-310778: Upgrade ixgbe driver to version 6.2.5
 
